@@ -1,5 +1,5 @@
 from lxml import html
-#from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup
 import requests
 import sys
 sys.stdin.reconfigure(encoding='utf-8')
@@ -76,10 +76,11 @@ for page in range(1,NUM_PAGES_TO_SCRAPE+1):
         
         for row in rows:
             # Extract headers (assuming they are in the first row)
-            headers = row.xpath('.//th/text()')# Not needed
+            #headers = row.xpath('.//th/text()')# Not needed
             #if headers:
             #    print('Headers:', headers)
-             
+            
+            href='' 
             #print("type(row)=",type(row)) # type(row)= <class 'lxml.html.HtmlElement'>
             for e in row.xpath('.//a'):
                 #print(f"{e.tag} - {e.attrib}") #works
@@ -87,17 +88,71 @@ for page in range(1,NUM_PAGES_TO_SCRAPE+1):
                 print("href=",href)
                 break # just read href of first a tag
             #end for
+            if href == '':
+                continue
+            print("href=", href)
+            
             
             #Now goto the href page and extract contact details:
-            response = requests.get(url, headers=my_headers)
+            response = requests.get(href, headers=my_headers)
+            if response.status_code != 200:
+                print("Failed to retrieve the webpage")
+                sys.exit()
+                
             
-              
+            #soup = BeautifulSoup(response.content, 'html.parser')
+            #print(soup.prettify())
+            #s = soup.find_all('div', class_='row')
+            #for line in s:
+            #    print(line.text)
+
+
+            
+            address_tree = html.fromstring(response.content)
+            print("address_tree=",address_tree)
+            address_cells = address_tree.xpath("//div[@class='x_content']")
+            print("len(address_cells)=",len(address_cells)) # => 2
+            
+            for parent in address_cells[1]:
+                print(f"Parent tag: {parent.tag} - Text: {parent.text}")
+                for child in parent:
+                    print(f"..Child tag: {child.tag} - Text: {child.text}")
+                    for grandchild in child:
+                        print(f"....Grandchild tag: {grandchild.tag}, Attribute: {grandchild.attrib}, Text: {grandchild.text}")
+            #end for
+            
+            for e in address_cells[1].xpath("//div[@class='col-md-3 col-sm-3']"):
+                print("e.text=",e.text.strip())
+            
+            print('Block Number:',address_cells[1].xpath("//div[@class='col-md-3 col-sm-3']/text()")[25].strip())
+            print('Bldg Name   :',address_cells[1].xpath("//div[@class='col-md-3 col-sm-3']/text()")[29].strip())
+            print('Street Name :',address_cells[1].xpath("//div[@class='col-md-3 col-sm-3']/text()")[33].strip())
+            print('Locality    :',address_cells[1].xpath("//div[@class='col-md-3 col-sm-3']/text()")[37].strip())
+            print('Landmark :',address_cells[1].xpath("//div[@class='col-md-3 col-sm-3']/text()")[41].strip())
+            print('Division :',address_cells[1].xpath("//div[@class='col-md-3 col-sm-3']/text()")[45].strip())
+            print('District :',address_cells[1].xpath("//div[@class='col-md-3 col-sm-3']/text()")[49].strip())
+            print('Taluka :',address_cells[1].xpath("//div[@class='col-md-3 col-sm-3']/text()")[55].strip())
+            print('Village :',address_cells[1].xpath("//div[@class='col-md-3 col-sm-3']/text()")[58].strip())
+            print('Pin code :',address_cells[1].xpath("//div[@class='col-md-3 col-sm-3']/text()")[61].strip())
+            
+            
+            
+            
+            
+            
+    
+                
+    
+                #print(f"{e.text}")
+            
+                  
             # Extract data cells
-            cells = row.xpath('.//td/text()')
+            cells = row.xpath('.//td/text()')# print(len(cells)) works
             if cells:
                 print('Row Data:', cells,)
                 name, reg_num = cells[1], cells[2]
                 agents.append({'name': name, 'reg_num': reg_num})
+                break #TODO: just read one record for now. Disable this later
     #end outer for
 
 print("len(agents)=",len(agents))
