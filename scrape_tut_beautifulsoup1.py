@@ -1,54 +1,81 @@
-import requests 
-from bs4 import BeautifulSoup, SoupStrainer  
-import sys
-sys.stdin.reconfigure(encoding='utf-8')
-sys.stdout.reconfigure(encoding='utf-8')
 
-# Making a GET request 
-r = requests.get('https://www.geeksforgeeks.org/python-programming-language/') 
-  
-# check status code for response received :success code - 200 
-print("r=",r) 
-print("#################################################")
+from bs4 import BeautifulSoup
+from urllib.request import urlopen
 
-# print content of request 
-print("r.content=",r.content)
-print("#################################################")
+url = "http://olympus.realpython.org/profiles/dionysus"
+page = urlopen(url)
+html = page.read().decode("utf-8")
+soup = BeautifulSoup(html, "html.parser")
 
-# Parsing the HTML 
-soup = BeautifulSoup(r.content, 'html.parser')
-print(soup.prettify()) 
+print(soup.prettify())
+print("!!!!!!!!!!!!!!!!!!!!!")
+print(soup.get_text())
+print("@@@@@@@@@@@@@@@@@@@@@")
+print(soup.find_all("img"))
+print("######################")
+image1, image2 = soup.find_all("img")
+print("image1.name=",image1.name,"; image1['src']=",image1['src'])
+print("$$$$$$$$$$$$$$$$$$$$$$")
+print("soup.title=",soup.title)
+print("soup.title.string=",soup.title.string)
+print("%%%%%%%%%%%%%%%%%%%%%%%%%%")
+print("soup.find_all('img', src='/static/dionysus.jpg')=",soup.find_all('img', src='/static/dionysus.jpg'))
+"""
+<html>
+ <head>
+  <title>
+   Profile: Dionysus
+  </title>
+ </head>
+ <body bgcolor="yellow">
+  <center>
+   <br/>
+   <br/>
+   <img src="/static/dionysus.jpg"/>
+   <h2>
+    Name: Dionysus
+   </h2>
+   <img src="/static/grapes.png"/>
+   <br/>
+   <br/>
+   Hometown: Mount Olympus
+   <br/>
+   <br/>
+   Favorite animal: Leopard
+   <br/>
+   <br/>
+   Favorite Color: Wine
+  </center>
+ </body>
+</html>
 
-print("****************************************************")
-s = soup.find('div', class_='entry-content')# find tags <div class="entry-content">
-lines = s.find_all('p') # find tags <p> inside of above-mentioned tags.
- 
-for line in lines:
-    print(line.text)
+!!!!!!!!!!!!!!!!!!!!!
 
-print("||||||||||||||||||||||||||||||||||||||||||||||||||||")
-# Finding by id
-s = soup.find('div', id= 'main')
 
-# Getting the left bar
-leftbar = s.find('ul', class_='leftBarList')
- 
-# All the li under the above ul
-lines = leftbar.find_all('li')
- 
-for line in lines:
-    print(line.text)
-print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-URL = "https://en.wikipedia.org/wiki/Nike,_Inc."
+Profile: Dionysus
 
-# We send Header and added a user agent to ensures that the target website web scraping doesn’t consider
-# traffic from our program as spam and finally gets blocked by them
-HEADERS = ({'User-Agent':  'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.157 Safari/537.36', 
-            'Accept-Language': 'en-US, en;q=0.5'})  
-  
-r = requests.get(URL, headers= HEADERS)
-soup = BeautifulSoup(r.content, "lxml", #NOTE: pip install lxml 
-                     parse_only = SoupStrainer( 
-                       'span', class_ = 'mw-headline')) 
-  
-print(soup.prettify()) 
+
+
+
+
+Name: Dionysus
+
+Hometown: Mount Olympus
+
+Favorite animal: Leopard
+
+Favorite Color: Wine
+
+
+
+
+@@@@@@@@@@@@@@@@@@@@@
+[<img src="/static/dionysus.jpg"/>, <img src="/static/grapes.png"/>]
+######################
+image1.name= img ; image1['src']= /static/dionysus.jpg
+$$$$$$$$$$$$$$$$$$$$$$
+soup.title= <title>Profile: Dionysus</title>
+soup.title.string= Profile: Dionysus
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+soup.find_all('img', src='/static/dionysus.jpg')= [<img src="/static/dionysus.jpg"/>]
+"""      
