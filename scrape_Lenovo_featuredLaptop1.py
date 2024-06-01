@@ -3,7 +3,6 @@ from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager 
 from selenium.webdriver.chrome.service import Service as ChromeService
 import time
-from collections import OrderedDict
 
 DEBUG = False
 def dbg(*s, endline = '\n'):
@@ -18,7 +17,6 @@ URL = 'https://www.lenovo.com/in/en/laptops/'
 if __name__=='__main__':
     
     # for holding the resultant list 
-    od = OrderedDict() 
     driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
     driver.get(URL)
     time.sleep(5)
@@ -32,15 +30,14 @@ if __name__=='__main__':
         dbg(titles[i].text)
         sanitized_titles.append(str(titles[i].text))
         
-    #print("111111111111111111111111111")
+    print("................ READ TITLES .............")
 
     prices = driver.find_elements(By.CLASS_NAME, "prices > span")
     #Now we sanitize the price by removing duplicates. It contains each price twice.
     sanitized_prices = []
     for i in range(0,len(prices),2): #pick only odd 
         sanitized_prices.append(str(prices[i].text))
-        
-    dbg("222222222222222222222222222222")
+    print("............. READ PRICES .............")
 
     #Recurse class Feature_Home and then class imgWrap and finally find tag img
     images = driver.find_elements(By.CSS_SELECTOR, ".Feature_Home > .imgWrap > img") 
@@ -49,8 +46,8 @@ if __name__=='__main__':
         image_src = images[i].get_attribute("src")     
         dbg(image_src)
         sanitized_images_src.append(str(image_src))
+    print("............. READ IMAGES SRC .............")
     
-    dbg("3333333333333333333333333333333333")
     #Find href that links to description
     links = driver.find_elements(By.CSS_SELECTOR, ".searchFeatureProduct .searchList a.lazy_href") 
     for i in range(len(links)):
@@ -60,7 +57,7 @@ if __name__=='__main__':
     sanitized_href = []
     for i in range(0,len(links),2): #pick only odd 
         sanitized_href.append(str(links[i].get_attribute("href")))
-    dbg("4444444444444444444444444444444444")
+    print("............. READ HREF .............")
     
     #Now we load the href and read the description:
     sanitized_descriptions = []
@@ -84,7 +81,7 @@ if __name__=='__main__':
                         sanitized_href[i],
                         sanitized_descriptions[i], #This is a list
                         ])
-    dbg("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF")
+    print("............. CREATED ELEMENTS .............")
     
     for i in range(0,len(elements)):
         print(elements[i])
