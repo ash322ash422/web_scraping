@@ -1,6 +1,8 @@
 from lxml import html
 import requests
 import pprint, sys
+from random import randint 
+from time import sleep 
 
 #NOTE: For some reason this program ios not picking 7th, 14th, 29th,etc records. Fix it.
 MAX_NUM_OF_RECORDS_TO_READ=8 #For testing only. I keep this low like 1 to 10
@@ -61,6 +63,7 @@ def get_scraped_data(num_of_pages_to_scrape):
     # Now scrape all webpages
     for page in range(1,num_of_pages_to_scrape+1):
         
+        sleep(randint(2,10)) #sleep for random seconds to prevent from getting blocked
         url = "https://maharera.maharashtra.gov.in/agents-search-result?agent_name=&agent_project_name=&agent_location=&agent_state=27" + \
             "&agent_division=&agent_district=&page=" + str(page) + "&op=Search"
         r = requests.get(url, headers=my_headers)
@@ -145,7 +148,7 @@ def get_scraped_data(num_of_pages_to_scrape):
                     website = address_cells[idx_to_use].xpath("//div[@class='col-md-3 col-sm-3']/text()")[69].strip()
                     
                     data.append({
-                        'debug_type': str(num_records)+') counter_16',
+                        'debug_type': str(num_records)+': counter_16',
                         'name': name,
                         'reg_num': reg_num,
                         'block_number': block_number,
@@ -188,7 +191,7 @@ def get_scraped_data(num_of_pages_to_scrape):
                     website = address_cells[idx_to_use].xpath("//div[@class='col-md-3 col-sm-3']/text()")[79].strip()
                     
                     data.append({
-                        'debug_type': str(num_records)+') counter_19',
+                        'debug_type': str(num_records)+': counter_19',
                         'name': name,
                         'reg_num': reg_num,
                         'block_number': block_number,
