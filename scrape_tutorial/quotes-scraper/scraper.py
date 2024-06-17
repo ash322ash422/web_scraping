@@ -8,7 +8,7 @@ class QuoteSpider(scrapy.Spider):
     name = 'quote-spider'
     start_urls = ['https://quotes.toscrape.com']
 
-    def parse(self, response):
+    def parse(self, response):#override
         NEXT_SELECTOR = '.next a::attr("href")'
 
         for quote in response.css('.quote'):

@@ -32,7 +32,7 @@ class StackSpider(Spider):
         
     #end def
     
-    def parse(self, response):
+    def parse(self, response): #override
         #Following returns list. See below for a sample of HTML
         questions = response.xpath('//a[@class="s-link"]')
         for q in questions:# NOTE: q is of type <class 'scrapy.selector.unified.Selector'>
